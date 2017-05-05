@@ -1,0 +1,81 @@
+[
+    {
+        "id": "8f7e24c7.c01388",
+        "type": "tab",
+        "label": "Flow 1"
+    },
+    {
+        "id": "78f4d0b1.e13aa",
+        "type": "opc-client",
+        "z": "8f7e24c7.c01388",
+        "name": "",
+        "opcserver": "6bd006ff.6b8228",
+        "channel": 0,
+        "command": 0,
+        "x": 788,
+        "y": 156,
+        "wires": []
+    },
+    {
+        "id": "3154d563.951baa",
+        "type": "inject",
+        "z": "8f7e24c7.c01388",
+        "name": "",
+        "topic": "",
+        "payload": "0000FF",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 188.5,
+        "y": 163,
+        "wires": [
+            [
+                "ec4fcfbe.8254b"
+            ]
+        ]
+    },
+    {
+        "id": "ec4fcfbe.8254b",
+        "type": "looptimer",
+        "z": "8f7e24c7.c01388",
+        "duration": "0.01",
+        "units": "Second",
+        "maxloops": "1200",
+        "maxtimeout": "1",
+        "maxtimeoutunits": "Hour",
+        "name": "",
+        "x": 390.5,
+        "y": 159,
+        "wires": [
+            [
+                "9cb1672b.ef8b98"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "9cb1672b.ef8b98",
+        "type": "function",
+        "z": "8f7e24c7.c01388",
+        "name": "",
+        "func": "var b = Buffer.allocUnsafe(300 * 3).fill(\"000000\", \"hex\");\nvar p = context.get(\"p\") || 0;\nb.write(msg.payload, p*3, 3, \"hex\");\np+=2;\ncontext.set(\"p\",p%300);\nreturn { payload: b };",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 604.5,
+        "y": 157,
+        "wires": [
+            [
+                "78f4d0b1.e13aa"
+            ]
+        ]
+    },
+    {
+        "id": "6bd006ff.6b8228",
+        "type": "opc-server",
+        "z": "",
+        "server": "localhost",
+        "port": "7890",
+        "numleds": "300"
+    }
+]

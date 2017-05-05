@@ -1,0 +1,38 @@
+
+<script type="text/x-red" data-help-name="opc-client" data-lang="en-US">
+    <!-- The first <p> is used as the pop-up tool tip when hovering over a    -->
+    <!-- node in the palette.                                                 -->
+    <p>Send pixel data to an OPC server</p>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">array | number | string</span></dt>
+        <dd>the color values (RGB) of each LED. If payload is no array, the colorvalue is applied to all LEDs. You can create
+            an initial <code>msg</code> with one-color array with the <code>OPC Buffer</code> node.
+            Instead of using a numeric value you may provide a string format supported by chroma.js (like #ff000, rgb(1,2,3) or colorname like 'pink').
+        </dd>
+        <dt class="optional">channel <span class="property-type">byte</span></dt>
+        <dd>You can use different opc channels with one opc-client instance and override the default channel</dd>
+        <dt class="optional">command <span class="property-type">byte</span></dt>
+        <dd>You can use different opc commmand with one opc-client instance and override the default command.
+            Note that currently only 0 (SetPixelColors) and 255 (SystemDefined) are definde commands.
+            See <a href="http://openpixelcontrol.org/" target="_blank">openpixelcontrol.org</a> for more information
+        </dd>
+        <dt class="optional">systemid <span class="property-type">byte</span></dt>
+        <dd>When command is set to 255 (sysex) then addressed SystemId is defined via the property <code>msg.systemid</code></dd>
+    </dl>
+    <h3>Details</h3>
+    <p>Pixel data is an array of RGB (UInt32) values. Values will be clamped to rgb(255,255,255) if greater. If the array is
+        shorter than the defined number of LEDs for the OPC server they will be ignored and their value will be unchanged.
+        All elements of the array exceeding the bound of the defined number of LEDs will be ignored.</p>
+            <p>Channel and command are optional config parameters as described in the OpenPixelControl Protocol. 
+    <p>See <a href="http://openpixelcontrol.org/" target="_blank">openpixelcontrol.org</a> for more information</p>
+</script>
+
+<script type="text/x-red" data-help-name="opc-server"  data-lang="en-US">
+    <p>A OPC server need to be running on the given host or ip-address with corresponding tcp-port.</p>
+    <p>This config instance will be reused by the different opc nodes so that only necessary connections will be established.</p>
+    <p>To support other nodes on array calculations you may provide the number of LEDs which are binded to the channel</p>
+
+
+</script>

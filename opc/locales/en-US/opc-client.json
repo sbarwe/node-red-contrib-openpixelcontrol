@@ -1,0 +1,15 @@
+{
+    "opc": {
+        "label": {
+            "server": "OPC Server",
+            "port": "Port",
+            "numleds" : " Number of LEDs"
+
+        },
+        "state" : {
+            "disconnected" : "Disconnected from OPC Server",
+            "connected" : "Connected to OPC Server", 
+            "connect-failed" : "Failed to connect to OPC Server"
+        }
+    }
+}
