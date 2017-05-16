@@ -14,14 +14,8 @@
  * limitations under the License.
  **/
 
-// If you use this as a template, update the copyright with your own name.
-
-// Sample Node-RED node file
-
 module.exports = function(RED) {
   "use strict";
-  // require any external libraries we may need....
-  //var foo = require("foo-library");
   const OpcClientStream = require("openpixelcontrol-stream").OpcClientStream,
     net = require("net"),
     chroma = require("chroma-js");
@@ -185,14 +179,6 @@ module.exports = function(RED) {
         }
       }
     };
-
-    // connect to server
-
-    // disconnect from server
-
-    // handle auto-reconnect
-
-    // function to send data to OPC Server
   }
 
   RED.nodes.registerType("opc-server", OPCServerConfigNode);
@@ -200,8 +186,6 @@ module.exports = function(RED) {
   function OPCClientNode(config) {
     // Create a RED node
     RED.nodes.createNode(this, config);
-
-    // copy "this" object in case we need it in context of callbacks of other functions.
 
     this.command = config.command;
     this.channel = config.channel;
@@ -219,7 +203,11 @@ module.exports = function(RED) {
         var numleds = node.opcserverConnection.numleds;
 
         var data = null;
-        if (msg.payload instanceof String || typeof msg.payload == "string" || !isNaN(msg.payload)) {
+        if (
+          msg.payload instanceof String ||
+          typeof msg.payload == "string" ||
+          !isNaN(msg.payload)
+        ) {
           var hex = chroma(msg.payload).hex().replace("#", "");
           data = Buffer.allocUnsafe(numleds * 3).fill(hex, "hex");
         } else if (
@@ -230,16 +218,7 @@ module.exports = function(RED) {
         else if (Array.isArray(msg.payload) && msg.payload.length > 0) {
           data = Uint32Array.from(msg.payload);
         }
-        // else if () number
-        // if payload is an integer
 
-        // if payload is
-        /*
-        Uint32Array
-        Buffer
-        Array
-        value --> int, string (hex / rgb(...).)
-        */
         if (data != null)
           node.opcserverConnection.callopc(command, channel, data, systemid);
       });
