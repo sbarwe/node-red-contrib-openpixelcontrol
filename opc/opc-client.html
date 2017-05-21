@@ -16,16 +16,16 @@
 
 <script type="text/x-red" data-template-name="opc-server">
     <div class="form-row">
-        <label for="node-config-input-server"><i class="fa fa-globe"></i> <span data-i18n="opc.label.server"></span></label>
-        <input class="input-append-left" type="text" id="node-config-input-server" placeholder="e.g. localhost" style="width:40%;">
+        <label for="node-config-input-server"><i class="fa fa-server"></i> <span data-i18n="opc.label.server"></span></label>
+        <input class="input-append-left" type="text" id="node-config-input-server" placeholder="localhost" >
     </div>
     <div class="form-row">
-        <label for="node-config-input-port" style="margin-left:20px; width:35px; "> <span data-i18n="opc.label.port"></span></label>
-        <input type="text" id="node-config-input-port" placeholder="e.g. 7890" style="width:55px">
+        <label for="node-config-input-port"><i class="fa fa-sign-in"></i> <span data-i18n="opc.label.port"></span></label>
+        <input type="text" id="node-config-input-port" placeholder="7890" >
     </div>
     <div class="form-row">
-        <label for="node-config-input-numleds" style="width:145px;"><i class="fa fa-list-ol"></i><span data-i18n="opc.label.numleds"></span></label>
-        <input type="text" id="node-config-input-numleds" placeholder="" style="width:10%;">
+        <label for="node-config-input-numleds"><i class="fa fa-ellipsis-h"></i><span data-i18n="opc.label.numleds"></span></label>
+        <input type="text" id="node-config-input-numleds" placeholder="300" >
     </div>
 
 </script>
@@ -45,13 +45,14 @@
         },
 
         oneditprepare: function () {
+            /*
             if (typeof this.server === 'undefined') {
                 this.server = "localhost";
             }
             if (typeof this.port === 'undefined') {
                 this.port = 7890;
             }
-
+            */
             $("#node-config-input-numleds").spinner({
                 min: 1,
                 max: 1024
@@ -115,6 +116,7 @@
         },
         color: "#e9967a",
         oneditprepare: function () {
+            /*
             if (typeof this.channel === 'undefined') {
                 this.channel = 0;
             }
@@ -122,7 +124,7 @@
             if (typeof this.command === 'undefined') {
                 this.command = 0;
             }
-
+            */
             $("#node-config-input-channel").spinner({
                 min: 0,
                 max: 255

@@ -24,7 +24,8 @@
   ],
   "node-red": {
     "nodes": {
-      "opcclient": "opc/opc-client.js"
+      "opcclient": "opc/opc-client.js",
+      "opcmix": "opc/opc-mix.js"
     }
   },
   "author": "Sebastian Barwe",

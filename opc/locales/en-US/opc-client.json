@@ -3,7 +3,7 @@
         "label": {
             "server": "OPC Server",
             "port": "Port",
-            "numleds" : " Number of LEDs"
+            "numleds" : "Pixel"
 
         },
         "state" : {

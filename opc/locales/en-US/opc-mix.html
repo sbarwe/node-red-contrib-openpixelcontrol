@@ -1,0 +1,17 @@
+<script type="text/x-red" data-help-name="opc-mix" data-lang="en-US">
+    <p>Mixes multiple color buffers into one buffer</p>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">Buffer[] | number[][] | string[][]</span></dt>
+        <dd>An array of payloads suitable for the `opc-client` node. Alle arrays or buffers needs to be of the same length regarding
+            the number of pixels.
+        </dd>
+    </dl>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">Buffer</span></dt>
+        <dd>A Buffer usable for the `opc-client`.
+        </dd>
+    </dl>
+</script>
