@@ -183,6 +183,116 @@ module.exports = function(RED) {
 
   RED.nodes.registerType("opc-server", OPCServerConfigNode);
 
+  function colormixer(colorBuffersToMix, outputBuffer) {
+    function rgb2cmyk(r, g, b) {
+      // convert to CMYK
+      let c = 255 - r; // cyan
+      let m = 255 - g; // magenta
+      let y = 255 - b; // yellow
+      let k = Math.min(c, m, y); // black
+      c = (c - k) / (255 - k);
+      m = (m - k) / (255 - k);
+      y = (y - k) / (255 - k);
+      return [c, m, y, k];
+    }
+
+    let acc = new Array(outputBuffer.length / 3);
+
+    for (let i = 0; i < acc.length; i++) {
+      let idx = i * 3;
+      acc[i] = [0, 0, 0, 0]; // accumulated cmyk
+      for (let j = 0; j < colorBuffersToMix.length; j++) {
+        var rgbarray = colorBuffersToMix[j];
+        var cmyk = rgb2cmyk(
+          rgbarray[idx + 0],
+          rgbarray[idx + 1],
+          rgbarray[idx + 2]
+        );
+        for (let o = 0; o < 4; o++)
+          acc[i][o] += cmyk[o];
+      }
+      for (let o = 0; o < 4; o++)
+        acc[i][o] /= colorBuffersToMix.length;
+      let c = acc[i][0];
+      let m = acc[i][1];
+      let y = acc[i][2];
+      let k = acc[i][3];
+      let r = Math.round((1.0 - (c * (1.0 - k) + k)) * 255.0 + 0.5);
+      let g = Math.round((1.0 - (m * (1.0 - k) + k)) * 255.0 + 0.5);
+      let b = Math.round((1.0 - (y * (1.0 - k) + k)) * 255.0 + 0.5);
+      outputBuffer[idx + 0] = r;
+      outputBuffer[idx + 1] = g;
+      outputBuffer[idx + 2] = b;
+    }
+  }
+
+  // create a buffer of r,g,b,r,g,b,r,g,b ... values from different payload types.
+  function getcolordata(payload, numleds) {
+    let data = null;
+    if (
+      payload instanceof String ||
+      typeof payload == "string" ||
+      !isNaN(payload)
+    ) {
+      var hex = chroma(payload).hex().replace("#", "");
+      data = Buffer.allocUnsafe(numleds * 3).fill(hex, "hex");
+    } else if (Buffer.isBuffer(payload)) {
+      if (payload.length > numleds * 3 || payload.length < numleds * 3)
+        throw new Error(
+          "Length of buffer mismatch. Expected a length of " + numleds * 3
+        );
+      data = payload;
+    } else if (payload instanceof UInt8Array) {
+      if (payload.length > numleds * 3 || payload.length < numleds * 3)
+        throw new Error(
+          "Length of UInt8Array mismatch. Expected a length of " + numleds * 3
+        );
+      data = Buffer.from(payload);
+    } else if (payload instanceof UInt32Array) {
+      if (payload.length > numleds || payload.length < numleds)
+        throw new Error(
+          "Length of Uint32Array mismatch. Expected a length of " + numleds
+        );
+      data = Buffer.allocUnsafe(numleds * 3);
+      let offset = 0;
+      for (let i; i < numleds; i++) {
+        let v = payload[i];
+        data[offset++] = (v >> 16) & 0xff; // r
+        data[offset++] = (v >> 8) & 0xff; // g
+        data[offset++] = v & 0xff; // b
+      }
+    } else if (Array.isArray(payload)) {
+      if (payload.length == numleds) {
+        // format an array of color values ['#rrggbb', '#rrggbb' ]
+        data = Buffer.allocUnsafe(numleds * 3);
+        let offset = 0;
+        for (let i; i < numleds; i++) {
+          let v = payload[i];
+          if (v instanceof String || typeof v == "string") {
+            var hex = v.replace("#", "");
+            offset += data.write(hex, offset, 3, "hex");
+          } else
+            throw Error(
+              "you need to provide an array of strings, numbers or a buffer"
+            );
+        }
+      } else if (payload.length == numleds * 3) {
+        data = Buffer.allocUnsafe(numleds * 3);
+        for (let i; i < numleds * 3; i++)
+          data[i] = payload[i] & 0xff;
+      } else {
+        // mix color here
+        data = Buffer.allocUnsafe(numleds * 3);
+        let colorBuffersToMix = payload.map(function(arr) {
+          return getcolordata(arr, numleds);
+        });
+        // mix them
+        colormixer(colorBuffersToMix, data);
+      }
+    }
+    return data;
+  }
+
   function OPCClientNode(config) {
     // Create a RED node
     RED.nodes.createNode(this, config);
@@ -192,6 +302,7 @@ module.exports = function(RED) {
     this.opcserver = config.opcserver;
     this.opcserverConnection = RED.nodes.getNode(this.opcserver);
     var node = this;
+
     // setup OPC stream client handling
     if (node.opcserverConnection) {
       node.opcserverConnection.register(this);
@@ -202,22 +313,7 @@ module.exports = function(RED) {
         var systemid = msg.systemid || 0;
         var numleds = node.opcserverConnection.numleds;
 
-        var data = null;
-        if (
-          msg.payload instanceof String ||
-          typeof msg.payload == "string" ||
-          !isNaN(msg.payload)
-        ) {
-          var hex = chroma(msg.payload).hex().replace("#", "");
-          data = Buffer.allocUnsafe(numleds * 3).fill(hex, "hex");
-        } else if (
-          Buffer.isBuffer(msg.payload) ||
-          msg.payload instanceof UInt32Array
-        )
-          data = msg.payload;
-        else if (Array.isArray(msg.payload) && msg.payload.length > 0) {
-          data = Uint32Array.from(msg.payload);
-        }
+        var data = getcolordata(msg.payload, numleds);
 
         if (data != null)
           node.opcserverConnection.callopc(command, channel, data, systemid);

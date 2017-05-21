@@ -14,6 +14,54 @@
   limitations under the License.
 -->
 
+<script type="text/x-red" data-template-name="opc-server">
+    <div class="form-row">
+        <label for="node-config-input-server"><i class="fa fa-globe"></i> <span data-i18n="opc.label.server"></span></label>
+        <input class="input-append-left" type="text" id="node-config-input-server" placeholder="e.g. localhost" style="width:40%;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-port" style="margin-left:20px; width:35px; "> <span data-i18n="opc.label.port"></span></label>
+        <input type="text" id="node-config-input-port" placeholder="e.g. 7890" style="width:55px">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-numleds" style="width:145px;"><i class="fa fa-list-ol"></i><span data-i18n="opc.label.numleds"></span></label>
+        <input type="text" id="node-config-input-numleds" placeholder="" style="width:10%;">
+    </div>
+
+</script>
+
+
+
+<script type="text/javascript">
+    RED.nodes.registerType('opc-server', {
+        category: 'config',
+        defaults: {
+            server: { value: "localhost", required: true },
+            port: { value: 7890, required: true, validate: RED.validators.number() },
+            numleds: { required: true, validate: RED.validators.number() }
+        },
+        label: function () {
+            return (this.server === "" ? "undefined" : this.server + ":" + this.port);
+        },
+
+        oneditprepare: function () {
+            if (typeof this.server === 'undefined') {
+                this.server = "localhost";
+            }
+            if (typeof this.port === 'undefined') {
+                this.port = 7890;
+            }
+
+            $("#node-config-input-numleds").spinner({
+                min: 1,
+                max: 1024
+            });
+        }
+        // oneditsave: function() { }
+    });
+
+</script>
+
 
 <script type="text/x-red" data-template-name="opc-client">
     <div class="form-row">
@@ -55,11 +103,12 @@
         },
         inputs: 1,               // set the number of inputs - only 0 or 1
         inputLabels: "value, array[numleds] or buffer of size",
+        //outputLabels: "the buffer sent via opc",
         outputs: 0,              // set the number of outputs - 0 to n
         // set the icon (held in icons dir below where you save the node)
         icon: "opc-client.png",     // saved in  icons/opcclient.png
         label: function () {     // sets the default label contents
-            return this.name || ("OPC: "+(RED.nodes.node(this.opcserver) ? RED.nodes.node(this.opcserver).label() : "opc-client"));
+            return this.name || ("OPC: " + (RED.nodes.node(this.opcserver) ? RED.nodes.node(this.opcserver).label() : "opc-client"));
         },
         labelStyle: function () { // sets the class to apply to the label
             return this.name ? "node_label_italic" : "";
@@ -73,50 +122,17 @@
             if (typeof this.command === 'undefined') {
                 this.command = 0;
             }
+
+            $("#node-config-input-channel").spinner({
+                min: 0,
+                max: 255
+            });
+
+            $("#node-config-input-command").spinner({
+                min: 0,
+                max: 255
+            });
         }
-    });
-
-</script>
-
-<script type="text/x-red" data-template-name="opc-server">
-    <div class="form-row">
-        <label for="node-config-input-server"><i class="fa fa-globe"></i> <span data-i18n="opc.label.server"></span></label>
-        <input class="input-append-left" type="text" id="node-config-input-server" placeholder="e.g. localhost" style="width:40%;">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-port" style="margin-left:20px; width:35px; "> <span data-i18n="opc.label.port"></span></label>
-        <input type="text" id="node-config-input-port" placeholder="e.g. 7890" style="width:55px">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-numleds" style="width:145px;"><i class="fa fa-list-ol"></i><span data-i18n="opc.label.numleds"></span></label>
-        <input type="text" id="node-config-input-numleds" placeholder="" style="width:10%;">
-    </div>
-
-</script>
-
-
-
-<script type="text/javascript">
-    RED.nodes.registerType('opc-server', {
-        category: 'config',
-        defaults: {
-            server: { value: "localhost", required: true },
-            port: { value: 7890, required: true, validate: RED.validators.number() },
-            numleds: { required: true, validate: RED.validators.number() }
-        },
-        label: function () {
-            return (this.server === "" ? "undefined" : this.server + ":" + this.port);
-        },
-
-        oneditprepare: function () {
-            if (typeof this.server === 'undefined') {
-                this.server = "localhost";
-            }
-            if (typeof this.port === 'undefined') {
-                this.port = 7890;
-            }
-        }
-        // oneditsave: function() { }
     });
 
 </script>

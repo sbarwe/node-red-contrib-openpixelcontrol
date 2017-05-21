@@ -1,11 +1,31 @@
 # node-red-contrib-openpixelcontrol
-A node to stream output to an [openpixelcontrol](http://openpixelcontrol.org/) server
+
+*THIS NODE IS CURRENTLY WORK IN PROGRESS AND FOR PUBLIC USAGE*
+
+A node to stream output to an [openpixelcontrol](http://openpixelcontrol.org/) server.
+The OPC-Protocol is a lightweight and simple TCP network protocol to change several RGB-color values of lights or LEDs.
+As the protocol is frame streamlined is typically used for LED light strips arrangements but basically it depends on the server implementation.
+Therefore the OPC supports a `channel` and `command` field to address other systems or run system specific commands. 
+
+See [OPC Server](#opc_server) for information how to setup a openpixelcontrol server on a Raspberry with an attached WS2812 LED strip.
+
+This node-set consists of the following nodes:
+- *colorspot*: highlights pixel with a given width and color, can be used to create an empty buffer as well
+- *colormix*: transform one or multiple inputs (array) to a mixed color array. (TODO: You can mirror or mask data as well)
+- *opc-client*: the node will collect input data and send new data at the defined updaterate (eg. 50Hz).
 
 # Install
 
 currently from git only
 
 # Usage
+
+Inputs
+Color Mixing
+
+# Performance
+The node respects the nodejs underlying buffers performance recommendations (buffers from pool <4k, Uint8arrays, array reusage, unsafe alloc).
+
 
 TBD
 
@@ -27,6 +47,8 @@ https://github.com/colorjs
 
 
 ## Timing, Synchronisation and Playback
+
+FSM node
 
 ## FFT with the RaspberryPi
 
