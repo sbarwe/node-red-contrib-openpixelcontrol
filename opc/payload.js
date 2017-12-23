@@ -4,25 +4,14 @@ const chroma = require("chroma-js");
 module.exports = (function() {
   var self = this;
 
-  function rgb2cmyk(r, g, b) {
-    // convert to CMYK
-    let c = 255.0 - 1.0 * r; // cyan
-    let m = 255.0 - 1.0 * g; // magenta
-    let y = 255.0 - 1.0 * b; // yellow
-    let k = Math.min(c, m, y); // black
-    c = (c - k) / (255.0 - k);
-    m = (m - k) / (255.0 - k);
-    y = (y - k) / (255.0 - k);
-    k = k / 255.0;
-    return [c, m, y, k];
-  }
-
   /**
    * @desc Mixing multiple Buffers containing rgb values into one outputbuffer
    * @param {Buffer[]} colorBuffersToMix Array of Buffers
    * @param {Buffer} outputBuffer Buffer to write mixed colors to
    */
   function colormixer(colorBuffersToMix, outputBuffer) {
+    //TODO: remove chroma here and make it more performant by selfcalculation
+
     for (let i = 0; i < outputBuffer.length / 3; i++) {
       let idx = i * 3;
 
@@ -50,45 +39,7 @@ module.exports = (function() {
       outputBuffer[idx + 1] = color[1] & 0xff;
       outputBuffer[idx + 2] = color[2] & 0xff;
     }
-    /*
-    //let acc = new Array(outputBuffer.length / 3);
 
-    for (let i = 0; i < outputBuffer.length / 3; i++) {
-      let idx = i * 3;
-      let acc = [0, 0, 0, 0]; // accumulated cmyk
-
-      for (let j = 0; j < colorBuffersToMix.length; j++) {
-        let rgbarray = colorBuffersToMix[j];
-        
-        let cmyk = rgb2cmyk(
-          rgbarray[idx + 0],
-          rgbarray[idx + 1],
-          rgbarray[idx + 2]
-        );
-       
-        for (let o = 0; o < 4; o++)
-          acc[o] += cmyk[o];
-
-           console.dir(acc);
-      }
-
-      for (let o = 0; o < 4; o++)
-        acc[o] /= colorBuffersToMix.length;
-
-        console.dir(acc);
-      let c = acc[0];
-      let m = acc[1];
-      let y = acc[2];
-      let k = acc[3];
-      let r = Math.round((1.0 - (c * (1.0 - k) + k)) * 255.0 + 0.5);
-      let g = Math.round((1.0 - (m * (1.0 - k) + k)) * 255.0 + 0.5);
-      let b = Math.round((1.0 - (y * (1.0 - k) + k)) * 255.0 + 0.5);
-      console.log(r,g,b);
-      outputBuffer[idx + 0] = r & 0xff;
-      outputBuffer[idx + 1] = g & 0xff;
-      outputBuffer[idx + 2] = b & 0xff;
-    }
-    */
   }
 
   /**

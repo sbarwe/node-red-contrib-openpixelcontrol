@@ -111,6 +111,7 @@
         label: function () {     // sets the default label contents
             return this.name || ("OPC: " + (RED.nodes.node(this.opcserver) ? RED.nodes.node(this.opcserver).label() : "opc-client"));
         },
+		align: "right",
         labelStyle: function () { // sets the class to apply to the label
             return this.name ? "node_label_italic" : "";
         },

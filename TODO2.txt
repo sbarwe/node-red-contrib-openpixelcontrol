@@ -1,0 +1,107 @@
+- example flow contributions with effects
+- video example
+- i18n
+- icon for flow 
+https://upload.wikimedia.org/wikipedia/commons/d/d6/Symbol_LED.svg
+https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Symbol_LED.svg/2000px-Symbol_LED.svg.png
+
+- settings: settings.js --> number of LEDs
+- init, reconnect setting,
+- check handling of opc stream in case of errors / connection loss (unpipe, ErrorHandler,destroy)
+- include helper methods for brightness, fading etc.
+- testing command (with opengl) 
+	http://willi.am/node-mocha-supertest/
+	--> tweet --> production tests with unit test frameworks
+	exmaple: https://github.com/node-red/node-red/blob/master/test/nodes/helper.js
+
+- API von node-red-contrib-rpi-ws2801 (https://github.com/natcl/node-red-contrib-rpi-ws2801)
+- Use https://github.com/parshap/js-opc instead of openpixelcontrol-stream?
+- use status node for connection state (reconnect automatically)
+	timestamp dranpacken, wenn nicht vorhanden (bzw. diese nnutzen)
+- add helper nodes like 
+	- onecolor (input: color, channel, command (optional) create stream with configurable framerate (via inject or trigger node), color format?: wie beim color picker von dashboard
+
+	- create buffer node https://www.klipfolio.com/sites/default/files/integrations/buffer.png
+
+special function block with chroma.js or color.js include,
+interpolation/fading (from to), color mix (from several input streams --> overlay, mask),
+brightness (via a grayscale map)
+
+- testing example:https://github.com/jdomeij/node-red-contrib-node-lifx/blob/master/example/mqtt.js
+
+Farbauswahl wie beim dashboard
+nur daten senden, wenn das array sich auch geändert hat (RBE)
+
+Folgenden OPC Server testen https://www.npmjs.com/package/node-opc-server
+
+Synchronisiernug und Ablaufsteuerung
+https://groups.google.com/forum/#!topic/node-red/cYhP1_-xcew
+https://flows.nodered.org/node/node-red-contrib-flow-combine
+https://flows.nodered.org/flow/8ba7f90f3ea8d92b1e01
+https://flows.nodered.org/node/node-red-contrib-parallel-iterator
+https://flows.nodered.org/node/node-red-contrib-merge
+https://flows.nodered.org/node/node-red-contrib-join
+https://www.npmjs.com/package/node-red-contrib-batcher
+--> join and split node (core)
+
+Zeitsteuerung (Start, Ende, Trigger each x)
+https://www.npmjs.com/package/node-red-contrib-bigtimer
+https://www.npmjs.com/package/node-red-contrib-time-range-switch
+https://www.npmjs.com/package/node-red-contrib-schedex
+https://flows.nodered.org/node/node-red-contrib-scheduler
+https://flows.nodered.org/node/node-red-contrib-vacation-timer
+--> stopwatch/timer node (ms --> auf slack nachfragen)
+		- start, end 
+		- current time
+		- schrittweite einstellbar
+		- start / stop trigger
+		- nur msg auswerfen, wenn eingang wieder gesetzt ist (überlaufschutz)
+		- current state and statistics in node context (contextbrowser)
+		- sync jitter against absolute time [checkbox]
+
+Notes:
+- alle stränge zum opc-client sollten immer nur einen ausgang haben. also zu einem knoten gehen.damit das msg objekt nicht kopiert ewrden muss. (es wird dann einfach durchgereihct)
+
+Farben:
+https://github.com/brehaut/color-js
+https://github.com/bgrins/TinyColor
+http://gka.github.io/chroma.js/
+
+Interesting nodes:
+http://flows.nodered.org/node/node-red-contrib-looptimer
+http://flows.nodered.org/node/node-red-contrib-stoptimer
+
+Nodes:
+- OPC Buffer
+- OPC Buffer Mix (Overlay,Mask, Concat, Copyin (from, len, to with applied filter/Mask)
+- OPC Effect (Effektauswahl (siehe unten) - Parameter) --> es kann auch ein eigener Effekt geschrieben werden (wie ein Function node)
+- OPC Client
+
+Examples:
+Parameter:
+(LTR, RTL, Startposition und Länge/Breite, Farbe, Geschwindigkeit)
+- Nightrider (LTR, RTL, PingPong)
+- Nightrider Overlay (Raindrops / Shotgun)
+- Wave
+- Strobo
+- Fire
+- VU Meter (LTR, RTL > breite angeben und Startposition)
+- Fusion (Overlay/Mask verschiedener Array Längen, z.B. für VU Meter)
+- Bowl
+- Puzzle 
+- Tetris / Fillup (stein auf stein)
+- Sunrise (aus der Mitte heraus, weißes Licht)
+
+
+
+Related work:
+https://flows.nodered.org/node/node-red-contrib-ola
+https://flows.nodered.org/node/node-red-contrib-rpi-ws2801
+https://flows.nodered.org/node/node-red-node-pi-neopixel
+https://www.openlighting.org/
+http://openpixelcontrol.org/
+https://github.com/scanlime/fadecandy
+https://github.com/zestyping/openpixelcontrol
+
+Ideas:
+- Set Brightness per Command
